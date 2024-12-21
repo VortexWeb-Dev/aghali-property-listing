@@ -188,7 +188,6 @@
                     <td class="px-3 py-4 whitespace-nowrap text-xs font-medium text-gray-800">
                         <div class="flex flex-col items-start gap-1">
                             <span class="text-sm text-muted" title="Bathrooms"><i class="fa-solid fa-ruler-combined mr-1"></i>${property.ufCrm22Size + ' sqft' || 'N/A'}</span>
-                            <span class="text-sm text-muted" title="Bedrooms"><i class="fa-solid fa-ruler-horizontal mr-1"></i>${sqftToSqm(property.ufCrm22Size) + ' sqm' || 'N/A'}</span>
                         </div>
                     </td>
                     <td class="px-3 py-4 whitespace-nowrap text-xs font-medium text-gray-800">
