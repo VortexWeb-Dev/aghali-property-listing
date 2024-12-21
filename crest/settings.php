@@ -1,7 +1,7 @@
 <?php
 define('C_REST_WEB_HOOK_URL', 'https://aghali.bitrix24.com/rest/44/3cb982q5ext2yuma//');
-// define('C_REST_CLIENT_ID', '');
-// define('C_REST_CLIENT_SECRET', '');
+// define('C_REST_CLIENT_ID', 'local.67666eb14df768.65946534');
+// define('C_REST_CLIENT_SECRET', 'Ee1eT9tr3G6QFSuuAIih9N13vyDmJrVJM7Cv7pVJFlQJAGlbFa');
 
 define('LISTINGS_ENTITY_TYPE_ID', 1066);
 define('AGENTS_ENTITY_TYPE_ID', 1070);
