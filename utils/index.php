@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . "/../crest/crest.php");
+require_once(__DIR__ . "/../crest/settings.php");
 
 
 function buildApiUrl($baseUrl, $entityTypeId, $fields, $start = 0)
@@ -531,4 +532,98 @@ function isAdmin($userId)
     ];
 
     return true || in_array($userId, $admins);
+}
+
+
+function isDuplicateLocation($location_type, $location, $entity = PF_LOCATIONS_ENTITY_TYPE_ID)
+{
+    $entityTypeId = 0;
+    $filter = [];
+    if ($location_type == 'location') {
+        // $entityTypeId = LOCATIONS_ENTITY_TYPE_ID;
+        // $filter = ['ufCrm15Location' => $data['location']];
+        $entityTypeId = $entity;
+        if ($entity === PF_LOCATIONS_ENTITY_TYPE_ID) {
+            $filter = ['ufCrm26Location' => $location['location']];
+        } else {
+            $filter = ['ufCrm16Location' => $location['location']];
+        }
+    } elseif ($location_type == 'city') {
+        $entityTypeId = CITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm34City' => $location['city']];
+    } elseif ($location_type == 'community') {
+        $entityTypeId = COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm36Community' => $location['community']];
+    } elseif ($location_type = 'sub_community') {
+        $entityTypeId = SUB_COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm38SubCommunity' => $location['sub_community']];
+    } elseif ($location_type = 'building') {
+        $entityTypeId = BUILDINGS_ENTITY_TYPE_ID;
+        $filter = ['ufCrm40Building' => $location['building']];
+    }
+
+    $result = Crest::call('crm.item.list', [
+        'entityTypeId' => $entityTypeId,
+        'filter' => $filter,
+    ]);
+
+    return $result['total'] != 0 || isset($result['error']);
+}
+
+function isDuplicateBayoutLocation($location_type, $location)
+{
+    $entityTypeId = 0;
+    $filter = [];
+    if ($location_type == 'location') {
+        $entityTypeId = BAYUT_LOCATIONS_ENTITY_TYPE_ID;
+        $filter = ['ufCrm28Location' => $location];
+    } elseif ($location_type == 'city') {
+        $entityTypeId = CITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm34City' => $location];
+    } elseif ($location_type == 'community') {
+        $entityTypeId = COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm36Community' => $location];
+    } elseif ($location_type = 'sub_community') {
+        $entityTypeId = SUB_COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm38SubCommunity' => $location];
+    } elseif ($location_type = 'building') {
+        $entityTypeId = BUILDINGS_ENTITY_TYPE_ID;
+        $filter = ['ufCrm40Building' => $location];
+    }
+
+    $result = Crest::call('crm.item.list', [
+        'entityTypeId' => $entityTypeId,
+        'filter' => $filter,
+    ]);
+
+    return $result['total'] != 0 || isset($result['error']);
+}
+
+function isDuplicatePfLocation($location_type, $location)
+{
+    $entityTypeId = 0;
+    $filter = [];
+    if ($location_type == 'location') {
+        $entityTypeId = PF_LOCATIONS_ENTITY_TYPE_ID;
+        $filter = ['ufCrm26Location' => $location];
+    } elseif ($location_type == 'city') {
+        $entityTypeId = CITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm34City' => $location];
+    } elseif ($location_type == 'community') {
+        $entityTypeId = COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm36Community' => $location];
+    } elseif ($location_type = 'sub_community') {
+        $entityTypeId = SUB_COMMUNITIES_ENTITY_TYPE_ID;
+        $filter = ['ufCrm38SubCommunity' => $location];
+    } elseif ($location_type = 'building') {
+        $entityTypeId = BUILDINGS_ENTITY_TYPE_ID;
+        $filter = ['ufCrm40Building' => $location];
+    }
+
+    $result = Crest::call('crm.item.list', [
+        'entityTypeId' => $entityTypeId,
+        'filter' => $filter,
+    ]);
+
+    return $result['total'] != 0 || isset($result['error']);
 }
