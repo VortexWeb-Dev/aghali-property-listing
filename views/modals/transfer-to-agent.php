@@ -81,7 +81,7 @@
         const fields = {
             "ufCrm22AgentId": agent.ufCrm24AgentId,
             "ufCrm22AgentName": agent.ufCrm24AgentName,
-            "ufCrm22AgentEmail": agent.ufCrm24AgentName,
+            "ufCrm22AgentEmail": agent.ufCrm24AgentEmail,
             "ufCrm22AgentPhone": agent.ufCrm24AgentMobile,
             "ufCrm22AgentPhoto": agent.ufCrm24AgentPhoto,
             "ufCrm22AgentLicense": agent.ufCrm24AgentLicense
