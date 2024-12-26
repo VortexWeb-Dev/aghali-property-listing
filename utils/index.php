@@ -440,21 +440,21 @@ function generateBayutXml($properties)
 
         $xml .= '<Price><![CDATA[' . ($property['ufCrm22Price'] ?? '') . ']]></Price>';
 
-        if ($property['ufCrm22RentalPeriod'] == 'Y' && isset($property['ufCrm22YearlyPrice'])) {
+        if ($property['ufCrm22RentalPeriod'] == 'Y' && (isset($property['ufCrm22YearlyPrice']) || isset($property['ufCrm22Price']))) {
             $xml .= '<Rent_Frequency>Yearly</Rent_Frequency>';
-        } elseif ($property['ufCrm22RentalPeriod'] == 'M' && isset($property['ufCrm22MonthlyPrice'])) {
+        } elseif ($property['ufCrm22RentalPeriod'] == 'M' && (isset($property['ufCrm22MonthlyPrice']) || isset($property['ufCrm22Price']))) {
             $xml .= '<Rent_Frequency>Monthly</Rent_Frequency>';
-        } elseif ($property['ufCrm22RentalPeriod'] == 'W' && isset($property['ufCrm22WeeklyPrice'])) {
+        } elseif ($property['ufCrm22RentalPeriod'] == 'W' && (isset($property['ufCrm22WeeklyPrice']) || isset($property['ufCrm22Price']))) {
             $xml .= '<Rent_Frequency>Weekly</Rent_Frequency>';
-        } elseif ($property['ufCrm22RentalPeriod'] == 'D' && isset($property['ufCrm22DailyPrice'])) {
+        } elseif ($property['ufCrm22RentalPeriod'] == 'D' && (isset($property['ufCrm22DailyPrice']) || isset($property['ufCrm22Price']))) {
             $xml .= '<Rent_Frequency>Daily</Rent_Frequency>';
         }
 
-        if ($property['ufCrm22Furnished'] === 'furnished') {
+        if ($property['ufCrm22Furnished'] === 'furnished' || strtolower($property['ufCrm22Furnished']) === 'yes') {
             $xml .= '<Furnished>Yes</Furnished>';
-        } elseif ($property['ufCrm22Furnished'] === 'unfurnished') {
+        } elseif ($property['ufCrm22Furnished'] === 'unfurnished' || strtolower($property['ufCrm22Furnished']) === 'no') {
             $xml .= '<Furnished>No</Furnished>';
-        } elseif ($property['ufCrm22Furnished'] === 'semi-furnished') {
+        } elseif ($property['ufCrm22Furnished'] === 'semi-furnished' || strtolower($property['ufCrm22Furnished']) === 'partly') {
             $xml .= '<Furnished>Partly</Furnished>';
         }
 
