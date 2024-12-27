@@ -30,7 +30,7 @@ if (isset($_FILES['csvFile']) && $_FILES['csvFile']['error'] === UPLOAD_ERR_OK) 
     }
 
     foreach ($dataRows as $row) {
-        $fullLocation = trim(implode(' - ', array_filter($row, fn($value) => $value !== '-')));
+        $fullLocation = $row[4] ?? '';
         $city = ($row[0] ?? '') === '-' ? '' : $row[0];
         $community = ($row[1] ?? '') === '-' ? '' : $row[1];
         $sub_community = ($row[2] ?? '') === '-' ? '' : $row[2];
