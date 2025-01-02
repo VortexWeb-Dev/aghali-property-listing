@@ -478,14 +478,12 @@ function generateBayutXml($properties)
         $xml .= '</Images>';
 
         $xml .= '<Features>';
-        foreach ($property['ufCrm22Amenities'] as $amenity) {
-            $amenityList = explode(',', $amenity);
-            foreach ($amenityList as $code) {
-                $fullName = getFullAmenityName(trim($code));
-                $xml .= '<Feature><![CDATA[' . $fullName . ']]></Feature>';
-            }
+        foreach ($property['ufCrm22Amenities'] as $code) {
+            $fullName = getFullAmenityName(trim($code));
+            $xml .= '<Feature><![CDATA[' . $fullName . ']]></Feature>';
         }
         $xml .= '</Features>';
+
 
         $xml .= '</Property>';
     }
@@ -525,13 +523,12 @@ function fetchCurrentUser()
 function isAdmin($userId)
 {
     $admins = [
-        1455, // Jackline Kariuki
-        1043, // Kevin Singh
-        414, // Akmal Sharopov
-        1509, // VortexWeb
+        4, // Adam Ghali
+        26, // Iqra Qasir
+        44, // VortexWeb
     ];
 
-    return true || in_array($userId, $admins);
+    return in_array($userId, $admins);
 }
 
 
