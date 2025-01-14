@@ -102,6 +102,7 @@
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('publish', 'bayut')"><i class="fas fa-building me-2"></i>Publish To Bayut</button></li>
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('publish', 'dubizzle')"><i class="fas fa-home me-2"></i>Publish To Dubizzle</button></li>
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('publish', 'website')"><i class="fas fa-globe me-2"></i>Publish To Website</button></li>
+          <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('publish', 'metahomes')"><i class="fas fa-robot me-2"></i>Publish To MetaHomes</button></li>
           <li>
             <hr class="dropdown-divider">
           </li>
@@ -114,6 +115,7 @@
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('unpublish', 'bayut')"><i class="fas fa-building me-2"></i>Unpublish from Bayut</button></li>
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('unpublish', 'dubizzle')"><i class="fas fa-home me-2"></i>Unpublish from Dubizzle</button></li>
           <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('unpublish', 'website')"><i class="fas fa-globe me-2"></i>Unpublish from Website</button></li>
+          <li><button class="dropdown-item px-4 py-2 w-full text-left truncate" type="button" onclick="handleBulkAction('unpublish', 'metahomes')"><i class="fas fa-robot me-2"></i>Unpublish from MetaHomes</button></li>
           <li>
             <hr class="dropdown-divider">
           </li>

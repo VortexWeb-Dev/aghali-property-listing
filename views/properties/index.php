@@ -62,7 +62,7 @@
         const baseUrl = 'https://aghali.bitrix24.com/rest/44/3cb982q5ext2yuma/';
         const entityTypeId = 1066;
         const fields = [
-            'id', 'ufCrm22ReferenceNumber', 'ufCrm22OfferingType', 'ufCrm22PropertyType', 'ufCrm22Price', 'ufCrm22TitleEn', 'ufCrm22DescriptionEn', 'ufCrm22Size', 'ufCrm22Bedroom', 'ufCrm22Bathroom', 'ufCrm22PhotoLinks', 'ufCrm22AgentName', 'ufCrm22City', 'ufCrm22Community', 'ufCrm22SubCommunity', 'ufCrm22Tower', 'ufCrm22PfEnable', 'ufCrm22BayutEnable', 'ufCrm22DubizzleEnable', 'ufCrm22WebsiteEnable', 'ufCrm22ListingOwner', 'ufCrm22Status', 'ufCrm22RentalPeriod'
+            'id', 'ufCrm22ReferenceNumber', 'ufCrm22OfferingType', 'ufCrm22PropertyType', 'ufCrm22Price', 'ufCrm22TitleEn', 'ufCrm22DescriptionEn', 'ufCrm22Size', 'ufCrm22Bedroom', 'ufCrm22Bathroom', 'ufCrm22PhotoLinks', 'ufCrm22AgentName', 'ufCrm22City', 'ufCrm22Community', 'ufCrm22SubCommunity', 'ufCrm22Tower', 'ufCrm22PfEnable', 'ufCrm22BayutEnable', 'ufCrm22DubizzleEnable', 'ufCrm22WebsiteEnable', 'ufCrm22MetahomesEnable', 'ufCrm22ListingOwner', 'ufCrm22Status', 'ufCrm22RentalPeriod'
         ];
         const orderBy = {
             id: 'desc'
@@ -156,12 +156,14 @@
                                 <li><button class="dropdown-item" onclick="handleAction('publish', ${property.id}, 'bayut')"><i class="fa-solid fa-building me-2"></i>Publish to Bayut</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('publish', ${property.id}, 'dubizzle')"><i class="fa-solid fa-home me-2"></i>Publish to Dubizzle</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('publish', ${property.id}, 'website')"><i class="fa-solid fa-globe me-2"></i>Publish to Website</button></li>
+                                <li><button class="dropdown-item" onclick="handleAction('publish', ${property.id}, 'metahomes')"><i class="fa-solid fa-robot me-2"></i>Publish to MetaHomes</button></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id})"><i class="fa-solid fa-archive me-2"></i>Unpublish from all</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id}, 'pf')"><i class="fa-solid fa-search me-2"></i>Unpublish from PF</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id}, 'bayut')"><i class="fa-solid fa-building me-2"></i>Unpublish from Bayut</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id}, 'dubizzle')"><i class="fa-solid fa-home me-2"></i>Unpublish from Dubizzle</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id}, 'website')"><i class="fa-solid fa-globe me-2"></i>Unpublish from Website</button></li>
+                                <li><button class="dropdown-item" onclick="handleAction('unpublish', ${property.id}, 'metahomes')"><i class="fa-solid fa-robot me-2"></i>Unpublish from MetaHomes</button></li>
                                 ` : ''}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><button class="dropdown-item text-danger" onclick="handleAction('archive', ${property.id})"><i class="fa-solid fa-archive me-2"></i>Archive</button></li>
@@ -230,6 +232,7 @@
                             ${property.ufCrm22BayutEnable === "Y" ? '<img class="w-8 h-8 rounded-full object-cover" src="assets/images/bayut.png" alt="Bayut" title="Bayut">' : ''}
                             ${property.ufCrm22DubizzleEnable === "Y" ? '<img class="w-8 h-8 rounded-full object-cover" src="assets/images/dubizzle.png" alt="Dubizzle" title="Dubizzle">' : ''}
                             ${property.ufCrm22WebsiteEnable === "Y" ? '<img class="w-8 h-8 rounded-full object-cover" src="assets/images/company-logo.svg" alt="Aghali" title="Aghali">' : ''}
+                            ${property.ufCrm22MetahomesEnable === "Y" ? '<img class="w-8 h-8 rounded-full object-cover" src="assets/images/metahomes.ico" alt="MetaHomes" title="MetaHomes">' : ''}
                         </div>
                     </td>
 

@@ -3,7 +3,7 @@
 
     <div class="my-4 flex gap-8">
         <!-- Property Finder -->
-        <div class="w-1/3 flex justify-center items-center">
+        <div class="flex-1 flex justify-center items-center">
             <div class="flex flex-col items-center text-center">
                 <img class="h-10 w-10 rounded-full object-cover mb-3" src="assets/images/pf.png" alt="Property Finder" title="Property Finder">
                 <label for="pf_enable" class="block text-sm font-medium text-gray-700 mb-2">Property Finder</label>
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Bayut and Dubizzle -->
-        <div class="w-1/3 flex flex-col justify-center items-center">
+        <div class="flex-1 flex flex-col justify-center items-center">
             <div class="flex flex-col items-center text-center mb-4">
                 <img class="h-10 w-10 rounded-full object-cover mb-3" src="assets/images/bayut.png" alt="Bayut" title="Bayut">
                 <label for="bayut_enable" class="block text-sm font-medium text-gray-700 mb-2">Bayut</label>
@@ -33,11 +33,20 @@
         </div>
 
         <!-- Website -->
-        <div class="w-1/3 flex justify-center items-center">
+        <div class="flex-1 flex justify-center items-center">
             <div class="flex flex-col items-center text-center">
                 <img class="h-10 w-10 rounded-full object-cover mb-3" src="assets/images/company-logo.svg" alt="Website" title="Website">
                 <label for="website_enable" class="block text-sm font-medium text-gray-700 mb-2">Website</label>
                 <input type="checkbox" id="website_enable" name="website_enable" class="mt-1 border-gray-300 rounded text-blue-600 focus:ring-blue-500">
+            </div>
+        </div>
+
+        <!-- MetaHomes -->
+        <div class="flex-1 flex justify-center items-center">
+            <div class="flex flex-col items-center text-center">
+                <img class="h-10 w-10 rounded-full object-cover mb-3" src="assets/images/metahomes.ico" alt="MetaHomes" title="MetaHomes">
+                <label for="metahomes_enable" class="block text-sm font-medium text-gray-700 mb-2">MetaHomes</label>
+                <input type="checkbox" id="metahomes_enable" name="metahomes_enable" class="mt-1 border-gray-300 rounded text-blue-600 focus:ring-blue-500">
             </div>
         </div>
     </div>

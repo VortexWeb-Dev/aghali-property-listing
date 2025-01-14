@@ -166,6 +166,7 @@
             "ufCrm22BayutEnable": data.bayut_enable === "on" ? "Y" : "N",
             "ufCrm22DubizzleEnable": data.dubizzle_enable === "on" ? "Y" : "N",
             "ufCrm22WebsiteEnable": data.website_enable === "on" ? "Y" : "N",
+            "ufCrm22MetahomesEnable": data.metahomes_enable === "on" ? "Y" : "N",
         };
 
         if (agent) {

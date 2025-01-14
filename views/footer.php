@@ -156,7 +156,7 @@
                 if (platform) {
                     apiUrl += `&fields[ufCrm22${platform.charAt(0).toUpperCase() + platform.slice(1)}Enable]=Y`;
                 } else {
-                    apiUrl += `&fields[ufCrm22PfEnable]=Y&fields[ufCrm22BayutEnable]=Y&fields[ufCrm22DubizzleEnable]=Y&fields[ufCrm22WebsiteEnable]=Y&fields[ufCrm22Status]=PUBLISHED`;
+                    apiUrl += `&fields[ufCrm22PfEnable]=Y&fields[ufCrm22BayutEnable]=Y&fields[ufCrm22DubizzleEnable]=Y&fields[ufCrm22WebsiteEnable]=Y&fields[ufCrm22MetahomesEnable]=Y&fields[ufCrm22Status]=PUBLISHED`;
                 }
                 break;
 
@@ -165,7 +165,7 @@
                 if (platform) {
                     apiUrl += `&fields[ufCrm22${platform.charAt(0).toUpperCase() + platform.slice(1)}Enable]=N`;
                 } else {
-                    apiUrl += `&fields[ufCrm22PfEnable]=N&fields[ufCrm22BayutEnable]=N&fields[ufCrm22DubizzleEnable]=N&fields[ufCrm22WebsiteEnable]=N&fields[ufCrm22Status]=UNPUBLISHED`;
+                    apiUrl += `&fields[ufCrm22PfEnable]=N&fields[ufCrm22BayutEnable]=N&fields[ufCrm22DubizzleEnable]=N&fields[ufCrm22WebsiteEnable]=N&fields[ufCrm22MetahomesEnable]=N&fields[ufCrm22Status]=UNPUBLISHED`;
                 }
                 break;
 
@@ -315,7 +315,8 @@
                     pf: 'ufCrm22PfEnable',
                     bayut: 'ufCrm22BayutEnable',
                     dubizzle: 'ufCrm22DubizzleEnable',
-                    website: 'ufCrm22WebsiteEnable'
+                    website: 'ufCrm22WebsiteEnable',
+                    metahomes: 'ufCrm22MetahomesEnable'
                 };
 
                 // If action is delete, first get all property details to find image URLs
@@ -400,13 +401,13 @@
                         if (platformFieldMapping[platform]) {
                             url += `&fields[${platformFieldMapping[platform]}]=Y`;
                         } else {
-                            url += `&fields[ufCrm22PfEnable]=Y&fields[ufCrm22BayutEnable]=Y&fields[ufCrm22DubizzleEnable]=Y&fields[ufCrm22WebsiteEnable]=Y`;
+                            url += `&fields[ufCrm22PfEnable]=Y&fields[ufCrm22BayutEnable]=Y&fields[ufCrm22DubizzleEnable]=Y&fields[ufCrm22WebsiteEnable]=Y&fields[ufCrm22MetahomesEnable]=Y`;
                         }
                     } else if (action === 'unpublish') {
                         if (platformFieldMapping[platform]) {
                             url += `&fields[${platformFieldMapping[platform]}]=N`;
                         } else {
-                            url += `&fields[ufCrm22PfEnable]=N&fields[ufCrm22BayutEnable]=N&fields[ufCrm22DubizzleEnable]=N&fields[ufCrm22WebsiteEnable]=N&fields[ufCrm22Status]=UNPUBLISHED`;
+                            url += `&fields[ufCrm22PfEnable]=N&fields[ufCrm22BayutEnable]=N&fields[ufCrm22DubizzleEnable]=N&fields[ufCrm22WebsiteEnable]=N&fields[ufCrm22MetahomesEnable]=N&fields[ufCrm22Status]=UNPUBLISHED`;
                         }
                     } else if (action === 'archive') {
                         url += '&fields[ufCrm22Status]=ARCHIVED';
@@ -724,6 +725,7 @@
             property.ufCrm22BayutEnable == "Y" ? document.getElementById('bayut_enable').checked = true : document.getElementById('bayut_enable').checked = false;
             property.ufCrm22DubizzleEnable == "Y" ? document.getElementById('dubizzle_enable').checked = true : document.getElementById('dubizzle_enable').checked = false;
             property.ufCrm22WebsiteEnable == "Y" ? document.getElementById('website_enable').checked = true : document.getElementById('website_enable').checked = false;
+            property.ufCrm22MetahomesEnable == "Y" ? document.getElementById('metahomes_enable').checked = true : document.getElementById('metahomes_enable').checked = false;
             if (document.getElementById('dubizzle_enable').checked && document.getElementById('bayut_enable').value) {
                 toggle_bayut_dubizzle.checked = true;
             }
