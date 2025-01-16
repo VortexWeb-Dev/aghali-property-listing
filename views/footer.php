@@ -450,23 +450,23 @@
 
                 ctx.drawImage(imageElement, 0, 0, width, height);
 
-                const watermarkAspect = watermarkImage.width / watermarkImage.height;
-                const imageAspect = width / height;
+                // const watermarkAspect = watermarkImage.width / watermarkImage.height;
+                // const imageAspect = width / height;
 
-                let watermarkWidth, watermarkHeight;
+                // let watermarkWidth, watermarkHeight;
 
-                if (watermarkAspect > imageAspect) {
-                    watermarkWidth = width * 0.6;
-                    watermarkHeight = watermarkWidth / watermarkAspect;
-                } else {
-                    watermarkHeight = height * 0.6;
-                    watermarkWidth = watermarkHeight * watermarkAspect;
-                }
+                // if (watermarkAspect > imageAspect) {
+                //     watermarkWidth = width * 0.6;
+                //     watermarkHeight = watermarkWidth / watermarkAspect;
+                // } else {
+                //     watermarkHeight = height * 0.6;
+                //     watermarkWidth = watermarkHeight * watermarkAspect;
+                // }
 
-                const xPosition = (width - watermarkWidth) / 2;
-                const yPosition = (height - watermarkHeight) / 2;
+                // const xPosition = (width - watermarkWidth) / 2;
+                // const yPosition = (height - watermarkHeight) / 2;
 
-                ctx.drawImage(watermarkImage, xPosition, yPosition, watermarkWidth, watermarkHeight);
+                // ctx.drawImage(watermarkImage, xPosition, yPosition, watermarkWidth, watermarkHeight);
                 const watermarkedImage = canvas.toDataURL('image/jpeg', 0.8);
                 resolve(watermarkedImage);
             };
