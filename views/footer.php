@@ -689,7 +689,7 @@
             document.getElementById('title_ar').value = property.ufCrm22TitleAr;
             document.getElementById('description_ar').textContent = property.ufCrm22DescriptionAr;
             document.getElementById('brochure_description_1').textContent = property.ufCrm22BrochureDescription;
-            document.getElementById('brochure_description_2').textContent = property.ufCrm_13_BROCHUREDESCRIPTION2;
+            document.getElementById('brochure_description_2').textContent = property.ufCrm_22_BROCHUREDESCRIPTION2;
 
             document.getElementById('titleEnCount').textContent = document.getElementById('title_en').value.length;
             document.getElementById('descriptionEnCount').textContent = document.getElementById('description_en').textContent.length;
@@ -715,7 +715,7 @@
 
             // Photos and Videos
             document.getElementById('video_tour_url').value = property.ufCrm22VideoTourUrl;
-            document.getElementById('360_view_url').value = property.ufCrm_13_360_VIEW_URL;
+            document.getElementById('360_view_url').value = property.ufCrm_22_360_VIEW_URL;
             document.getElementById('qr_code_url').value = property.ufCrm22QrCodePropertyBooster;
             // Photos
             // Floor Plan

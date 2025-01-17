@@ -130,7 +130,7 @@
             "ufCrm22ServiceCharge": data.service_charge,
             "ufCrm22FinancialStatus": data.financial_status,
             "ufCrm22VideoTourUrl": data.video_tour_url,
-            "ufCrm_13_360_VIEW_URL": data["360_view_url"],
+            "ufCrm_22_360_VIEW_URL": data["360_view_url"],
             "ufCrm22QrCodePropertyBooster": data.qr_code_url,
 
             "ufCrm22Location": data.pf_location,
@@ -159,7 +159,7 @@
             "ufCrm22UnitNo": data.unit_no,
             "ufCrm22SaleType": data.sale_type,
             "ufCrm22BrochureDescription": data.brochure_description_1,
-            "ufCrm_13_BROCHUREDESCRIPTION2": data.brochure_description_2,
+            "ufCrm_22_BROCHUREDESCRIPTION2": data.brochure_description_2,
 
             "ufCrm22HidePrice": data.hide_price === "on" ? "Y" : "N",
             "ufCrm22PfEnable": data.pf_enable === "on" ? "Y" : "N",

@@ -374,7 +374,7 @@ function generatePfXml($properties)
         $xml .= formatField('build_year', $property['ufCrm22BuildYear']);
         $xml .= formatField('parking', $property['ufCrm22Parking']);
         $xml .= formatFurnished($property);
-        $xml .= formatField('view360', $property['ufCrm_13_360_VIEW_URL']);
+        $xml .= formatField('view360', $property['ufCrm_22_360_VIEW_URL']);
         $xml .= formatPhotos($property['ufCrm22PhotoLinks']);
         $xml .= formatField('floor_plan', $property['ufCrm22FloorPlan']);
         $xml .= formatGeopoints($property);
