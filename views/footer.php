@@ -456,17 +456,21 @@
                 let watermarkWidth, watermarkHeight;
 
                 if (watermarkAspect > imageAspect) {
-                    watermarkWidth = width * 0.6;
+                    watermarkWidth = width * 0.2;
                     watermarkHeight = watermarkWidth / watermarkAspect;
                 } else {
-                    watermarkHeight = height * 0.6;
+                    watermarkHeight = height * 0.2;
                     watermarkWidth = watermarkHeight * watermarkAspect;
                 }
 
                 const xPosition = (width - watermarkWidth) / 2;
                 const yPosition = (height - watermarkHeight) / 2;
 
+                ctx.globalAlpha = 0.5; // 50% transparency
                 ctx.drawImage(watermarkImage, xPosition, yPosition, watermarkWidth, watermarkHeight);
+
+                ctx.globalAlpha = 1.0;
+
                 const watermarkedImage = canvas.toDataURL('image/jpeg', 0.8);
                 resolve(watermarkedImage);
             };
