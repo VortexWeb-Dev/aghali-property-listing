@@ -51,7 +51,15 @@
 
   <div class="flex flex-wrap justify-end items-center gap-2">
     <!-- Create Listing Button -->
-    <a href="?page=add-property" class="btn btn-primary py-1.5 px-4 rounded-md"><i class="fas fa-plus me-2"></i>Create Listing</a>
+    <?php
+    $current_page = isset($_GET['page']) ? $_GET['page'] : '';  // Get the current page from the URL
+    ?>
+
+    <a href="?page=<?php echo ($current_page == 'pocket') ? 'add-pocket' : 'add-property'; ?>" class="btn btn-primary py-1.5 px-4 rounded-md">
+      <i class="fas fa-plus me-2"></i>
+      <?php echo ($current_page == 'pocket') ? 'Add Pocket' : 'Create Listing'; ?>
+    </a>
+
 
     <?php if ($isAdmin) { ?>
       <!-- XML Publish Dropdown -->

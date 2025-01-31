@@ -625,11 +625,17 @@
             document.getElementById('landlord_name').value = property.ufCrm22LandlordName;
             document.getElementById('landlord_email').value = property.ufCrm22LandlordEmail;
             document.getElementById('landlord_phone').value = property.ufCrm22LandlordContact;
-            Array.from(document.getElementById('availability').options).forEach(option => {
-                if (option.value == property.ufCrm22Availability) option.selected = true;
-            });
-            document.getElementById('available_from').value = formatInputDate(property.ufCrm22AvailableFrom);
-            document.getElementById('contract_expiry').value = formatInputDate(property.ufCrm22ContractExpiryDate);
+            if (document.getElementById('availability')) {
+                Array.from(document.getElementById('availability').options).forEach(option => {
+                    if (option.value == property.ufCrm22Availability) option.selected = true;
+                });
+            }
+            if (document.getElementById('available_from')) {
+                document.getElementById('available_from').value = formatInputDate(property.ufCrm22AvailableFrom);
+            }
+            if (document.getElementById('contract_expiry')) {
+                document.getElementById('contract_expiry').value = formatInputDate(property.ufCrm22ContractExpiryDate);
+            }
 
             // Specifications
             document.getElementById('title_deed').value = property.title;
@@ -666,10 +672,18 @@
             });
 
             // Property Permit
-            document.getElementById('rera_permit_number').value = property.ufCrm22ReraPermitNumber
-            document.getElementById('dtcm_permit_number').value = property.ufCrm22DtcmPermitNumber
-            document.getElementById('rera_issue_date').value = formatInputDate(property.ufCrm22ReraPermitIssueDate);
-            document.getElementById('rera_expiration_date').value = formatInputDate(property.ufCrm22ReraPermitExpirationDate);
+            if (document.getElementById('rera_permit_number')) {
+                document.getElementById('rera_permit_number').value = property.ufCrm22ReraPermitNumber
+            }
+            if (document.getElementById('dtcm_permit_number')) {
+                document.getElementById('dtcm_permit_number').value = property.ufCrm22DtcmPermitNumber
+            }
+            if (document.getElementById('rera_issue_date')) {
+                document.getElementById('rera_issue_date').value = formatInputDate(property.ufCrm22ReraPermitIssueDate);
+            }
+            if (document.getElementById('rera_expiration_date')) {
+                document.getElementById('rera_expiration_date').value = formatInputDate(property.ufCrm22ReraPermitExpirationDate);
+            }
 
             // Pricing
             document.getElementById('price').value = property.ufCrm22Price;
@@ -690,17 +704,33 @@
             // Title and Description
             document.getElementById('title_en').value = property.ufCrm22TitleEn;
             document.getElementById('description_en').textContent = property.ufCrm22DescriptionEn;
-            document.getElementById('title_ar').value = property.ufCrm22TitleAr;
-            document.getElementById('description_ar').textContent = property.ufCrm22DescriptionAr;
-            document.getElementById('brochure_description_1').textContent = property.ufCrm22BrochureDescription;
-            document.getElementById('brochure_description_2').textContent = property.ufCrm_22_BROCHUREDESCRIPTION2;
+            if (document.getElementById('title_ar')) {
+                document.getElementById('title_ar').value = property.ufCrm22TitleAr;
+            }
+            if (document.getElementById('description_ar')) {
+                document.getElementById('description_ar').textContent = property.ufCrm22DescriptionAr;
+            }
+            if (document.getElementById('brochure_description_1')) {
+                document.getElementById('brochure_description_1').textContent = property.ufCrm22BrochureDescription;
+            }
+            if (document.getElementById('brochure_description_2')) {
+                document.getElementById('brochure_description_2').textContent = property.ufCrm_22_BROCHUREDESCRIPTION2;
+            }
 
             document.getElementById('titleEnCount').textContent = document.getElementById('title_en').value.length;
             document.getElementById('descriptionEnCount').textContent = document.getElementById('description_en').textContent.length;
-            document.getElementById('titleArCount').textContent = document.getElementById('title_ar').value.length;
-            document.getElementById('descriptionArCount').textContent = document.getElementById('description_ar').textContent.length;
-            document.getElementById('brochureDescription1Count').textContent = document.getElementById('brochure_description_1').textContent.length;
-            document.getElementById('brochureDescription2Count').textContent = document.getElementById('brochure_description_2').textContent.length;
+            if (document.getElementById('titleArCount')) {
+                document.getElementById('titleArCount').textContent = document.getElementById('title_ar').value.length;
+            }
+            if (document.getElementById('descriptionArCount')) {
+                document.getElementById('descriptionArCount').textContent = document.getElementById('description_ar').textContent.length;
+            }
+            if (document.getElementById('brochureDescription1Count')) {
+                document.getElementById('brochureDescription1Count').textContent = document.getElementById('brochure_description_1').textContent.length;
+            }
+            if (document.getElementById('brochureDescription2Count')) {
+                document.getElementById('brochureDescription2Count').textContent = document.getElementById('brochure_description_2').textContent.length;
+            }
 
             // Location
             document.getElementById('pf_location').value = property.ufCrm22Location;

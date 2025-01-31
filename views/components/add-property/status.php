@@ -1,3 +1,7 @@
+<?php
+$current_page = isset($_GET['page']) ? $_GET['page'] : '';
+?>
+
 <div class="bg-white shadow-md rounded-lg p-6">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Publishing Status</h2>
 
@@ -52,7 +56,7 @@
         <!-- Pocket Option -->
         <div class="border border-gray-300 p-4 rounded-md cursor-pointer transition-colors hover:bg-blue-50 flex gap-2 items-center"
             data-status-value="POCKET" id="pocket-option">
-            <input type="radio" name="status" value="POCKET" id="pocket" class="peer">
+            <input type="radio" name="status" value="POCKET" id="pocket" class="peer" <?php echo ($current_page == 'add-pocket') ? 'checked' : ''; ?>>
             <label for="pocket" class="text-md text-gray-500 peer-checked:text-blue-600 peer-checked:border-transparent transition-all w-full flex items-center justify-between">
                 Save as Pocket Listing
             </label>

@@ -1,3 +1,7 @@
+<?php
+$current_page = isset($_GET['page']) ? $_GET['page'] : '';
+?>
+
 <div class="bg-white shadow-md rounded-lg p-6 ">
     <h2 class="text-2xl font-semibold">Management</h2>
     <p class="text-sm text-gray-500 mb-4">Please fill in all the required fields</p>
@@ -38,28 +42,29 @@
             <input type="text" id="landlord_phone" name="landlord_phone" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" required>
         </div>
 
-        <!-- Column 1 -->
-        <div class="max-w-sm">
-            <label for="availability" class="block text-sm font-medium mb-2">Availability</label>
-            <select id="availability" name="availability" class="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
-                <option value="">Please select</option>
-                <option value="available">Available</option>
-                <option value="underOffer">Under Offer</option>
-                <option value="reserved">Reserved</option>
-                <option value="sold">Sold</option>
-            </select>
-        </div>
-        <!-- Column 2 -->
-        <div class="max-w-sm">
-            <label for="available_from" class="block text-sm font-medium mb-2">Available From</label>
-            <input type="date" id="available_from" name="available_from" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
-        </div>
-        <!-- Column 3 -->
-        <div class="max-w-sm">
-            <label for="contract_expiry" class="block text-sm font-medium mb-2">Contract Expiry Date</label>
-            <input type="date" id="contract_expiry" name="contract_expiry" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
-        </div>
-
+        <?php if ($current_page == 'add-property'): ?>
+            <!-- Column 1 -->
+            <div class="max-w-sm">
+                <label for="availability" class="block text-sm font-medium mb-2">Availability</label>
+                <select id="availability" name="availability" class="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                    <option value="">Please select</option>
+                    <option value="available">Available</option>
+                    <option value="underOffer">Under Offer</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="sold">Sold</option>
+                </select>
+            </div>
+            <!-- Column 2 -->
+            <div class="max-w-sm">
+                <label for="available_from" class="block text-sm font-medium mb-2">Available From</label>
+                <input type="date" id="available_from" name="available_from" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+            </div>
+            <!-- Column 3 -->
+            <div class="max-w-sm">
+                <label for="contract_expiry" class="block text-sm font-medium mb-2">Contract Expiry Date</label>
+                <input type="date" id="contract_expiry" name="contract_expiry" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

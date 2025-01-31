@@ -7,7 +7,7 @@
     <div id="property-table" class="flex flex-col">
         <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
-                <div class="overflow-hidden">
+                <div class="">
                     <table class="min-w-full divide-y divide-gray-200 table-responsive">
                         <thead>
                             <tr>
@@ -144,8 +144,8 @@
                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
                             <ul class="dropdown-menu shadow absolute z-10" style="max-height: 50vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #6B7280 #f9fafb; font-size:medium;">
-                                <li><a class="dropdown-item" href="?page=edit-property&id=${property.id}"><i class="fa-solid fa-edit me-2"></i>Edit</a></li>
-                                <li><a class="dropdown-item" href="?page=view-property&id=${property.id}"><i class="fa-solid fa-eye me-2"></i>View Details</a></li>
+                                <li><a class="dropdown-item" href="?page=edit-pocket&id=${property.id}"><i class="fa-solid fa-edit me-2"></i>Edit</a></li>
+                                <li><a class="dropdown-item" href="?page=view-pocket&id=${property.id}"><i class="fa-solid fa-eye me-2"></i>View Details</a></li>
                                 <li><button class="dropdown-item" onclick="handleAction('downloadPDF', ${property.id})"><i class="fa-solid fa-download me-2"></i>Download PDF</button></li>
                                 <li><button class="dropdown-item" onclick="handleAction('duplicate', ${property.id})"><i class="fa-solid fa-copy me-2"></i>Duplicate Listing</button></li>
                                 <li>

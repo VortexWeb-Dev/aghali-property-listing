@@ -7,7 +7,7 @@
     <div id="property-table" class="flex flex-col">
         <div class="-m-1.5 overflow-x-auto">
             <div class="p-1.5 min-w-full inline-block align-middle">
-                <div class="overflow-hidden">
+                <div class="">
                     <table class="min-w-full divide-y divide-gray-200 table-responsive">
                         <thead>
                             <tr>
