@@ -540,6 +540,43 @@
     // Process base64 images
     async function processBase64Images(base64Images, watermarkPath) {
         const photoPaths = [];
+        const TARGET_ASPECT_RATIO = 4 / 3;
+
+        function resizeToAspectRatio(image) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let newWidth = image.width;
+            let newHeight = image.height;
+            const currentAspectRatio = image.width / image.height;
+
+            if (currentAspectRatio > TARGET_ASPECT_RATIO) {
+                newWidth = image.height * TARGET_ASPECT_RATIO;
+                newHeight = image.height;
+            } else if (currentAspectRatio < TARGET_ASPECT_RATIO) {
+                newWidth = image.width;
+                newHeight = image.width / TARGET_ASPECT_RATIO;
+            }
+
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            const xOffset = (newWidth - image.width) / 2;
+            const yOffset = (newHeight - image.height) / 2;
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, newWidth, newHeight);
+
+            ctx.drawImage(
+                image,
+                xOffset,
+                yOffset,
+                image.width,
+                image.height
+            );
+
+            return canvas.toDataURL();
+        }
 
         for (const base64Image of base64Images) {
             const regex = /^data:image\/(\w+);base64,/;
@@ -560,19 +597,23 @@
                 await new Promise((resolve, reject) => {
                     imageElement.onload = async () => {
                         try {
-                            // Add watermark to the image
-                            const watermarkedDataUrl = await addWatermark(imageElement, watermarkPath);
-                            // const watermarkedDataUrl = await addWatermarkText(imageElement, 'AGhali Real Estate LLC');
-                            // const watermarkedDataUrl = await addWatermarkWithFabric(imageElement, watermarkPath);
+                            const resizedDataUrl = resizeToAspectRatio(imageElement);
 
-                            // Convert the data URL to a Blob
+                            const resizedImage = new Image();
+                            resizedImage.src = resizedDataUrl;
+
+                            await new Promise(resolve => {
+                                resizedImage.onload = resolve;
+                            });
+
+                            const watermarkedDataUrl = await addWatermark(resizedImage, watermarkPath);
+
                             const watermarkedBlob = dataURLToBlob(watermarkedDataUrl);
 
-                            // Upload the watermarked Blob
                             const uploadedUrl = await uploadFile(watermarkedBlob);
 
                             if (uploadedUrl) {
-                                photoPaths.push(uploadedUrl); // Add the uploaded URL to the photoPaths array
+                                photoPaths.push(uploadedUrl);
                             } else {
                                 console.error('Error uploading photo from base64 data');
                             }
@@ -582,7 +623,7 @@
                             console.error('Error processing watermarking or uploading:', error);
                             reject(error);
                         } finally {
-                            URL.revokeObjectURL(imageUrl); // Clean up the object URL
+                            URL.revokeObjectURL(imageUrl);
                         }
                     };
 
