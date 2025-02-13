@@ -113,7 +113,7 @@
             }
 
             const data = await response.json();
-            const properties = data.result?.items || [];
+            const properties = data.result?.items.filter((property) => property.ufCrm22Status !== 'POCKET') || [];
             const totalCount = data.total || 0;
 
             totalPages = Math.ceil(totalCount / pageSize);
