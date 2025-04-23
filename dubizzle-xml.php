@@ -46,7 +46,7 @@ $fields = [
     'ufCrm22BuildYear',
     'ufCrm22Parking',
     'ufCrm22Furnished',
-    'ufCrm_13_360_VIEW_URL',
+    'ufCrm_22_360_VIEW_URL',
     'ufCrm22PhotoLinks',
     'ufCrm22FloorPlan',
     'ufCrm22Geopoints',
@@ -64,7 +64,8 @@ $fields = [
     'ufCrm22DubizzleEnable',
     'ufCrm22SaleType',
     'ufCrm22WebsiteEnable',
-    'updatedTime'
+    'updatedTime',
+    'ufCrm22Amenities'
 ];
 
 $properties = fetchAllProperties($baseUrl, $entityTypeId, $fields, 'dubizzle');
