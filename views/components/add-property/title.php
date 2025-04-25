@@ -20,7 +20,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : '';
             <small class="text-xs text-gray-500"><span id="descriptionEnCount">0</span> / 1500 characters</small>
         </div>
 
-        <?php if ($current_page == 'add-property'): ?>
+        <?php if ($current_page == 'add-property' || $current_page == 'edit-property'): ?>
             <!-- Column 1 -->
             <div>
                 <label for="title_ar" class="block text-sm font-medium mb-2">Title (Arabic)</label>

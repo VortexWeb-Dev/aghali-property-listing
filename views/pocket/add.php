@@ -10,7 +10,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : '';
             <!-- Specifications -->
             <?php include_once('views/components/add-property/specifications.php'); ?>
             <!-- Property Permit -->
-            <?php if ($current_page == 'add-property'): ?>
+            <?php if ($current_page == 'add-property' || $current_page == 'edit-property'): ?>
                 <?php include_once('views/components/add-property/permit.php'); ?>
             <?php endif; ?>
             <!-- Pricing -->

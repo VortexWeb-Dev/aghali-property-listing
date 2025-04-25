@@ -42,7 +42,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : '';
             <input type="text" id="landlord_phone" name="landlord_phone" class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" required>
         </div>
 
-        <?php if ($current_page == 'add-property'): ?>
+        <?php if ($current_page == 'add-property' || $current_page == 'edit-property'): ?>
             <!-- Column 1 -->
             <div class="max-w-sm">
                 <label for="availability" class="block text-sm font-medium mb-2">Availability</label>
