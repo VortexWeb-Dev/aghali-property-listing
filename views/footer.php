@@ -466,7 +466,7 @@
                 const xPosition = (width - watermarkWidth) / 2;
                 const yPosition = (height - watermarkHeight) / 2;
 
-                ctx.globalAlpha = .0; // 90% opacity
+                ctx.globalAlpha = 0.9 // 90% opacity
                 ctx.drawImage(watermarkImage, xPosition, yPosition, watermarkWidth, watermarkHeight);
 
                 ctx.globalAlpha = 1.0;
