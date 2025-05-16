@@ -1,414 +1,654 @@
+<?php
+
+require __DIR__ . "/crest/crest.php";
+require __DIR__ . "/crest/crestcurrent.php";
+require __DIR__ . "/crest/settings.php";
+require __DIR__ . "/utils/index.php";
+require __DIR__ . "/vendor/autoload.php";
+
+define('C_REST_WEB_HOOK_URL', 'https://aghali.bitrix24.com/rest/44/3cb982q5ext2yuma/');
+
+// Fetch URL params
+$type = $_GET['type'];
+$id   = $_GET['id'];
+
+// Retrieve the property from Bitrix24
+$response = CRest::call('crm.item.get', [
+    "entityTypeId" => LISTINGS_ENTITY_TYPE_ID,
+    "id"           => $id
+]);
+
+$property = $response['result']['item'];
+
+if (!$property) {
+    die("Property not found.");
+}
+
+// Utility function to sanitize file names
+function sanitizeFileName($filename)
+{
+    $filename = trim($filename);
+    $filename = str_replace(' ', '_', $filename);
+    $filename = preg_replace('/[^A-Za-z0-9_\-\.]/', '', $filename);
+    $filename = preg_replace('/_+/', '_', $filename);
+    return $filename;
+}
+
+// Prepare data
+$file_name     = !empty($property['ufCrm22ReferenceNumber'])
+    ? sanitizeFileName($property['ufCrm22ReferenceNumber']) . ".pdf"
+    : "Property_$id.pdf";
+
+$title         = $property['ufCrm22TitleEn']       ?? "No Title";
+$price         = !empty($property['ufCrm22Price']) ? "AED " . $property['ufCrm22Price'] : "Not Available";
+$refId         = $property['ufCrm22ReferenceNumber'] ?? "";
+$location      = $property['ufCrm22Location']      ?? "Unknown";
+$description   = $property['ufCrm22DescriptionEn'] ?? "No Description";
+$images        = $property['ufCrm22PhotoLinks']    ?? [];
+$mainImage     = isset($images[0]) ? $images[0] : '';
+$size          = $property['ufCrm22Size']          ?? "0";
+$bedrooms      = $property['ufCrm22Bedroom']       ?? "0";
+$bathrooms     = $property['ufCrm22Bathroom']      ?? "0";
+$propertyType  = $property['ufCrm22PropertyType']  ?? "Unknown";
+$offeringType = $property['ufCrm22OfferingType'] ?? "Unknown";
+$availability  = $property['ufCrm22Availability']  ?? "Unknown";
+$geopoints     = $property['ufCrm22Geopoints']     ?? null;
+
+// Company info
+$companyLogoPath = __DIR__ . "/assets/images/company-logo.png";
+$companyName    = "AGHALI REAL ESTATE";
+$companyAddress = "901/909, World Trade Center 1, Nassima Tower. Sheik Zayed Road, Dubai, UAE";
+$companyWebsite = "https://aghalirealestate.com/";
+
+// Agent/Owner info
+if ($type === 'agent') {
+    $agentName  = $property['ufCrm22AgentName']  ?? "Agent Name";
+    $agentEmail = $property['ufCrm22AgentEmail'] ?? "agent@example.com";
+    $agentPhone = $property['ufCrm22AgentPhone'] ?? "+971 4 357 5939";
+} elseif ($type === 'owner') {
+    $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
+    // Attempt to fetch owner details from Bitrix
+    $userResponse = CRest::call("user.get", [
+        "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
+    ]);
+    $owner       = $userResponse['result'][0] ?? [];
+    $agentEmail  = $owner["EMAIL"]          ?? "owner@example.com";
+    $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "+971 4 357 5939";
+} else {
+    // Default to current user
+    $currentUserResponse = CRestCurrent::call('user.current');
+    $user       = $currentUserResponse['result'];
+    $agentName  = trim($user['NAME'] . ' ' . $user['LAST_NAME']);
+    $agentEmail = $user['EMAIL'];
+    $agentPhone = $user['PERSONAL_MOBILE'] ?? "+971 4 357 5939";
+}
+
+// Amenities
+$amenities = $property['ufCrm22Amenities'] ?? [];
+
+// Function to convert image to Base64
+function imageToBase64($path)
+{
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $data = file_get_contents($path);
+    if ($data) {
+        $base64 = base64_encode($data);
+        return 'data:image/' . $type . ';base64,' . $base64;
+    }
+    return null;
+}
+
+// Convert company logo to Base64
+$base64Logo = imageToBase64($companyLogoPath);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aghali Property Listing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <meta charset="UTF-8">
+    <title><?= htmlspecialchars($title) ?></title>
     <style>
-        /* Add print-specific styles */
+        /* 
+      ShadCN-inspired design 
+      Using subtle shadows, rounded corners, clean sans-serif typography
+    */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 24px;
+            color: #1A1A1A;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #FFFFFF;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            margin: 0;
+            padding: 0;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* Utility classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-blue {
+            color: #1D4ED8;
+        }
+
+        .bg-light-gray {
+            background-color: #F3F4F6;
+        }
+
+        /* Light grey */
+        .rounded-xl {
+            border-radius: 12px;
+        }
+
+        .rounded-2xl {
+            border-radius: 16px;
+        }
+
+        .shadow {
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+
+        .mb-3 {
+            margin-bottom: 12px;
+        }
+
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+
+        .mb-5 {
+            margin-bottom: 20px;
+        }
+
+        .mb-6 {
+            margin-bottom: 24px;
+        }
+
+        .mr-2 {
+            margin-right: 8px;
+        }
+
+        .mr-3 {
+            margin-right: 12px;
+        }
+
+        .mr-4 {
+            margin-right: 16px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .gap-2 {
+            gap: 8px;
+        }
+
+        .gap-3 {
+            gap: 12px;
+        }
+
+        .gap-4 {
+            gap: 16px;
+        }
+
+        .p-4 {
+            padding: 16px;
+        }
+
+        .p-3 {
+            padding: 12px;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        /* Top Section: Hero Images */
+        .hero-container {
+            display: flex;
+            flex-wrap: nowrap;
+            /* keep on one row if possible */
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .hero-main {
+            width: 70%;
+            position: relative;
+        }
+
+        .hero-side {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* vertically center smaller images */
+            gap: 16px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* Title & Price Section */
+        .title-price-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .title-center {
+            flex: 1;
+            text-align: center;
+        }
+
+        .price-right {
+            min-width: 160px;
+            text-align: right;
+        }
+
+        .logo-left {
+            width: 100px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-left img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .sale-badge {
+            display: inline-block;
+            background-color: #1D4ED8;
+            color: #FFFFFF;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .ref-id {
+            font-size: 12px;
+            color: #6B7280;
+        }
+
+        /* Property Details & Additional Images */
+        .split-layout {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .split-left,
+        .split-right {
+            flex: 1;
+        }
+
+        .property-desc {
+            margin-bottom: 16px;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* 2x2 layout */
+            gap: 12px;
+        }
+
+        .grid-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* Facilities & Amenities */
+        .amenities-section {
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .amenities-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* or 3 columns if you prefer */
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 3px;
+        }
+
+        /* Location Section */
+        .location-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .location-map {
+            flex: 1;
+        }
+
+        .location-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .map-iframe {
+            width: 100%;
+            height: 220px;
+            border: 0;
+            border-radius: 12px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+
+        /* Contact (Agent) Section */
+        .agent-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 3px;
+        }
+
+        .agent-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 9999px;
+            /* fully circular */
+            object-fit: cover;
+            background-color: #E5E7EB;
+            /* placeholder grey */
+        }
+
+        .agent-details {
+            flex: 1;
+        }
+
+        .enquiry-btn {
+            display: inline-block;
+            background-color: #1D4ED8;
+            color: #FFF;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Basic headings spacing */
+        .section-heading {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 4px;
+        }
+
+        /* Page breaks (for multi-page PDFs) */
+        .page-break {
+            page-break-before: always;
+        }
+
+        /* Download PDF Button styling */
+        .download-pdf-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: #1D4ED8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .download-pdf-btn:hover {
+            background: #1E3A8A;
+            transform: translateY(-2px);
+        }
+
         @media print {
-            body {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+            .no-print {
+                display: none !important;
             }
-        }
-
-        /* Add delay for development only */
-        .delay-loading {
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .loaded {
-            opacity: 1;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 p-6 overflow-y-auto">
-    <div id="loading-indicator" class="fixed top-0 left-0 w-full h-full bg-white flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mb-4"></div>
-            <p class="text-xl text-gray-700">Generating your property brochure...</p>
-            <p class="text-sm text-gray-500 mt-2">Please wait, this may take a few moments</p>
-        </div>
-    </div>
+<body>
+    <button class="download-pdf-btn no-print" onclick="downloadPDF()">Download PDF</button>
 
-    <div class="my-6 max-w-4xl mx-auto text-center">
-        <button id="downloadBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
-            Download PDF
-        </button>
-        <button id="redirectBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded ml-4">
-            Back to Listings
-        </button>
-    </div>
 
-    <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden delay-loading" id="brochure-card">
-        <div class="relative bg-yellow-500">
-            <div class="image-container" style="height: 24rem; background-color: #f3f4f6;">
-                <img src="placeholder.jpeg" alt="Villa" class="w-full h-96 object-cover" id="imageLarge" />
-            </div>
-            <div class="absolute top-0 left-0 p-4 bg-yellow-500 text-white">
-                <h1 class="text-3xl font-bold">AGhali Real Estate LLC</h1>
-            </div>
-        </div>
-        <div class="p-6">
-            <h2 class="text-4xl font-bold text-yellow-500 uppercase" id="title">
-                Single Row Villa
-            </h2>
-            <p class="text-xl text-gray-700">
-                Offered at
-                <span class="font-bold text-yellow-500" id="priceText">AED <span id="price"></span></span>
-            </p>
-        </div>
-        <div class="px-6">
-            <h3 class="text-2xl font-bold" id="subtitle">Villa for rent in Al Furjan</h3>
-            <p class="text-gray-700 mt-4" id="description">
-                Brand-new 4-bedroom + maid's villa in Murooj East, Al Furjan.
-                Single-row, park-facing, private garden, closed kitchen, spacious
-                living area, 3 parking spaces. Gated community with pool, courts, play
-                areas, parks, and retail. Near Sheikh Zayed Road for easy access to
-                key Dubai areas.
-            </p>
-        </div>
-        <div class="p-6">
-            <h3 class="text-2xl font-bold text-gray-800">Our Facilities</h3>
-            <ul class="list-disc list-inside text-gray-700 mt-2">
-                <li id="propertyType">Villa</li>
-                <li><span id="size"></span> sqft / <span id="sizeSqm"></span> sqm</li>
-                <li><span id="bathrooms"></span> Bathrooms</li>
-                <li><span id="bedrooms"></span> Bedrooms</li>
-            </ul>
-        </div>
-        <div class="grid grid-cols-3 gap-4 px-6">
-            <div class="image-container bg-gray-200 rounded-lg" style="height: 10rem;">
-                <img src="placeholder.jpeg" alt="Interior 1" class="w-full h-40 object-cover rounded-lg" id="image1" />
-            </div>
-            <div class="image-container bg-gray-200 rounded-lg" style="height: 10rem;">
-                <img src="placeholder.jpeg" alt="Interior 2" class="w-full h-40 object-cover rounded-lg" id="image2" />
-            </div>
-            <div class="image-container bg-gray-200 rounded-lg" style="height: 10rem;">
-                <img src="placeholder.jpeg" alt="Interior 3" class="w-full h-40 object-cover rounded-lg" id="image3" />
-            </div>
-        </div>
-        <div class="w-full bg-gray-200 p-6 mt-6 flex justify-between">
-            <div>
-                <h3 class="text-2xl font-bold text-gray-800">Contact Us</h3>
-                <p class="text-xl text-yellow-500 font-bold mt-2">+971 52 110 0555</p>
-                <p class="text-gray-700">Quick Respond</p>
-            </div>
-            <div class="flex items-center mt-4">
-                <div class="image-container bg-gray-100 rounded-full" style="width: 4rem; height: 4rem;">
-                    <img src="placeholder.jpeg" alt="Agent" class="w-16 h-16 rounded-full object-cover" id="agentImage" />
+    <!-- 1️⃣ Top Section: Hero Images -->
+    <div class="hero-container">
+        <!-- Left: Large primary image (70%) -->
+        <div class="hero-main">
+            <?php if ($mainImage): ?>
+                <img
+                    src="<?= htmlspecialchars($mainImage) ?>"
+                    alt="Main Property Image"
+                    class="hero-image shadow rounded-2xl">
+            <?php else: ?>
+                <div style="padding: 40px; background-color: #f0f0f0;"
+                    class="shadow rounded-2xl text-center">
+                    No main image available
                 </div>
-                <div class="ml-4">
-                    <p class="font-bold text-gray-800" id="agentName">Sachin Das</p>
-                    <p class="text-gray-700" id="agentPhone">+971 50 591 5264</p>
-                    <p class="text-gray-700" id="agentEmail">2Zi0d@example.com</p>
-                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Right: Two stacked smaller images (30%) -->
+        <div class="hero-side">
+            <?php if (isset($images[1])): ?>
+                <img
+                    src="<?= htmlspecialchars($images[1]) ?>"
+                    alt="Side Image 1"
+                    class="hero-image shadow rounded-2xl">
+            <?php endif; ?>
+
+            <?php if (isset($images[2])): ?>
+                <img
+                    src="<?= htmlspecialchars($images[2]) ?>"
+                    alt="Side Image 2"
+                    class="hero-image shadow rounded-2xl">
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- 2️⃣ Title & Price Section -->
+    <div class="title-price-row">
+        <!-- Company Logo -->
+        <div class="logo-left">
+            <?php if ($base64Logo): ?>
+                <img
+                    src="<?= $base64Logo ?>"
+                    alt="Company Logo">
+            <?php else: ?>
+                Logo not available
+            <?php endif; ?>
+        </div>
+
+        <!-- Title (center) -->
+        <div class="title-center">
+            <h1><?= htmlspecialchars($title) ?>
+                <span class="sale-badge">
+                    <?= ($offeringType === "CS" || $offeringType === "RS") ? "FOR SALE" : "FOR RENT" ?>
+                </span>
+            </h1>
+        </div>
+
+        <!-- Price (right) -->
+        <div class="price-right">
+            <h2 class="text-blue font-bold mb-1"><?= htmlspecialchars($price) ?></h2>
+            <?php if (!empty($refId)): ?>
+                <div class="ref-id">Ref: <?= htmlspecialchars($refId) ?></div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- 3️⃣ Property Details & Additional Interior Images -->
+    <div class="split-layout">
+        <!-- Left Column: Property Description -->
+        <div class="split-left">
+            <h3 class="section-heading">Property Details</h3>
+            <div class="property-desc">
+                <p><strong>Location:</strong> <?= htmlspecialchars($location) ?></p>
+                <p><strong>Size:</strong> <?= htmlspecialchars($size) ?> sqft</p>
+                <p><strong>Bedrooms:</strong> <?= htmlspecialchars($bedrooms) ?></p>
+                <p><strong>Bathrooms:</strong> <?= htmlspecialchars($bathrooms) ?></p>
+                <p><strong>Type:</strong> <?= htmlspecialchars($propertyType) ?></p>
+                <?php if (!empty($availability)): ?>
+                    <p><strong>Availability:</strong> <?= htmlspecialchars($availability) ?></p>
+                <?php endif; ?>
+            </div>
+            <p><?= nl2br(htmlspecialchars($description)) ?></p>
+        </div>
+
+        <!-- Right Column: 4 smaller images in a 2x2 grid -->
+        <div class="split-right">
+            <div class="image-grid">
+                <?php
+                // Start from image index 3 to show additional interior images
+                for ($i = 3; $i < 7; $i++):
+                    if (isset($images[$i])):
+                ?>
+                        <img
+                            src="<?= htmlspecialchars($images[$i]) ?>"
+                            alt="Interior Image <?= $i ?>"
+                            class="grid-image shadow rounded-xl">
+                    <?php else: ?>
+                        <!-- If not enough images, show placeholders or skip -->
+                <?php endif;
+                endfor; ?>
             </div>
         </div>
     </div>
 
+    <!-- 4️⃣ Facilities & Amenities (Full Width, Light Grey Background) -->
+    <div class="amenities-section bg-light-gray rounded-xl shadow">
+        <h3 class="section-heading text-center">Facilities and Amenities</h3>
+        <?php if (!empty($amenities)): ?>
+            <div class="amenities-list">
+                <?php foreach ($amenities as $amenity): ?>
+                    <div class="amenity-item">
+                        <!-- Icon placeholder or use your own icons -->
+                        <span>🏷️</span>
+                        <span><?= htmlspecialchars(getFullAmenityName($amenity)) ?></span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="text-center mb-0">No amenities listed.</p>
+        <?php endif; ?>
+    </div>
+
+    <!-- 5️⃣ Location Section -->
+    <?php if ($geopoints):
+        $coords = explode(',', $geopoints);
+        $lat = trim($coords[0]);
+        $lng = trim($coords[1]);
+    ?>
+        <div class="location-section">
+            <!-- Left: Map -->
+            <div class="location-map">
+                <iframe
+                    class="map-iframe"
+                    src="https://maps.google.com/maps?q=<?= $lat ?>,<?= $lng ?>&hl=en&z=14&output=embed"
+                    allowfullscreen></iframe>
+            </div>
+
+            <!-- Right: Location Details -->
+            <div class="location-info">
+                <h3 class="section-heading">Location</h3>
+                <p><strong><?= htmlspecialchars($location) ?></strong></p>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- 6️⃣ Contact Information (Agent Details) -->
+    <h3 class="section-heading">Contact Information</h3>
+    <div class="agent-card">
+        <!-- Agent Photo (placeholder or real) -->
+        <img
+            src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            alt="Agent Photo"
+            class="agent-photo">
+        <div class="agent-details">
+            <strong><?= htmlspecialchars($agentName) ?></strong><br>
+            <?= htmlspecialchars($agentPhone) ?><br>
+            <small><?= htmlspecialchars($agentEmail) ?></small>
+        </div>
+        <a href="mailto:<?= htmlspecialchars($agentEmail) ?>" class="enquiry-btn">Make an Enquiry</a>
+    </div>
     <script>
-        document.addEventListener("DOMContentLoaded", async function() {
-            let property = null;
-            let loadedImagesCount = 0;
-            let totalImagesToLoad = 5;
-            let allImagesLoaded = false;
+        function downloadPDF() {
+            document.querySelector('.download-pdf-btn').style.display = 'none';
+            window.print();
 
-            async function downloadBrochure(filename) {
-                try {
-                    document.getElementById('loading-indicator').style.display = 'flex';
-
-                    const {
-                        jsPDF
-                    } = window.jspdf;
-                    const doc = new jsPDF("p", "mm", "a4");
-                    const brochureElement = document.getElementById("brochure-card");
-
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-
-                    const canvas = await html2canvas(brochureElement, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false,
-                        allowTaint: true,
-                        backgroundColor: "white",
-                        imageTimeout: 15000,
-                        onclone: function(clonedDoc) {
-                            const images = clonedDoc.querySelectorAll('img');
-                            images.forEach(img => {
-                                img.loading = 'eager';
-                                img.style.display = 'block';
-                            });
-                        }
-                    });
-
-                    const imgData = canvas.toDataURL("image/jpeg", 0.95);
-                    const imgWidth = 210;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                    doc.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-                    doc.save(`${filename}.pdf`);
-
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    return true;
-                } catch (error) {
-                    console.error("Error generating brochure PDF:", error);
-                    alert("Error generating PDF. Please try again.");
-                    document.getElementById('loading-indicator').style.display = 'none';
-                    return false;
-                }
-            }
-
-            function sqftToSqm(sqft) {
-                return Math.round(sqft / 0.092903);
-            }
-
-            function getPropertyType(propertyType) {
-                const types = {
-                    AP: "Apartment",
-                    BW: "Bungalow",
-                    CD: "Compound",
-                    DX: "Duplex",
-                    FF: "Full floor",
-                    HF: "Half floor",
-                    LP: "Land / Plot",
-                    PH: "Penthouse",
-                    TH: "Townhouse",
-                    VH: "Villa",
-                    WB: "Whole Building",
-                    HA: "Short Term / Hotel Apartment",
-                    LC: "Labor camp",
-                    BU: "Bulk units",
-                    WH: "Warehouse",
-                    FA: "Factory",
-                    OF: "Office space",
-                    RE: "Retail",
-                    SH: "Shop",
-                    SR: "Show Room",
-                    SA: "Staff Accommodation"
-                };
-                return types[propertyType] || "Type Not Available";
-            }
-
-            function getOfferingType(offeringType) {
-                const types = {
-                    "RS": "Sale",
-                    "CS": "Sale",
-                    "RR": "Rent",
-                    "CR": "Rent",
-                };
-                return types[offeringType] || "Sale";
-            }
-
-            function formatPrice(price) {
-                return new Intl.NumberFormat('en-US').format(price);
-            }
-
-            async function fetchPropertyDetails(propertyId) {
-                try {
-                    if (!propertyId) {
-                        throw new Error("No property ID provided");
-                    }
-
-                    const response = await fetch(`https://aghali.bitrix24.com/rest/44/3cb982q5ext2yuma/crm.item.get?entityTypeId=1066&id=${propertyId}`);
-                    const data = await response.json();
-
-                    if (!data.result) throw new Error("Property not found.");
-
-                    return data.result.item;
-                } catch (error) {
-                    console.warn("Using demo property data:", error);
-                    return {
-                        "ufCrm22TitleEn": "Demo Luxury Villa",
-                        "ufCrm22BrochureDescription": "This beautiful 4-bedroom villa offers spacious living areas, a private garden, and modern amenities throughout. Located in a premium gated community with full facilities including swimming pools, gyms, and children's play areas. Walking distance to restaurants and shops. Easy access to major highways.",
-                        "ufCrm22DescriptionEn": "This beautiful 4-bedroom villa offers spacious living areas, a private garden, and modern amenities throughout. Located in a premium gated community with full facilities including swimming pools, gyms, and children's play areas. Walking distance to restaurants and shops. Easy access to major highways.",
-                        "ufCrm22Size": "2500",
-                        "ufCrm22Bathroom": "4",
-                        "ufCrm22Bedroom": "4",
-                        "ufCrm22PropertyType": "VH",
-                        "ufCrm22Price": "2500000",
-                        "ufCrm22RentalPeriod": "Y",
-                        "ufCrm22YearlyPrice": "250000",
-                        "ufCrm22Community": "Palm Jumeirah",
-                        "ufCrm22OfferingType": "RR",
-                        "ufCrm22AgentName": "Alex Johnson",
-                        "ufCrm22AgentPhone": "+971 50 123 4567",
-                        "ufCrm22AgentEmail": "alex@aghali.example.com",
-                        "ufCrm22PhotoLinks": [],
-                        "ufCrm22AgentPhoto": ""
-                    };
-                }
-            }
-
-            async function loadImageAsDataURL(url) {
-                return new Promise((resolve) => {
-                    if (!url || url === "placeholder.jpeg") {
-                        resolve("placeholder.jpeg");
-                        return;
-                    }
-
-                    const img = new Image();
-                    img.crossOrigin = "Anonymous";
-
-                    img.onload = function() {
-                        try {
-                            const canvas = document.createElement("canvas");
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-
-                            const ctx = canvas.getContext("2d");
-                            ctx.drawImage(img, 0, 0);
-
-                            const dataURL = canvas.toDataURL("image/jpeg", 0.75);
-                            resolve(dataURL);
-                        } catch (error) {
-                            console.warn(`Failed to convert image to data URL: ${url}`, error);
-                            resolve("placeholder.jpeg");
-                        }
-                    };
-
-                    img.onerror = function() {
-                        console.warn(`Failed to load image: ${url}`);
-                        resolve("placeholder.jpeg");
-                    };
-
-                    img.src = url;
-                });
-            }
-
-            async function loadAndSetImage(imageElement, imageUrl) {
-                try {
-                    imageElement.src = "placeholder.jpeg";
-                    const dataUrl = await loadImageAsDataURL(imageUrl);
-                    imageElement.src = dataUrl;
-
-                    imageElement.onload = function() {
-                        loadedImagesCount++;
-                        updateLoadingStatus();
-                    };
-
-                    return true;
-                } catch (error) {
-                    console.warn(`Error loading image: ${imageUrl}`, error);
-                    loadedImagesCount++;
-                    updateLoadingStatus();
-                    return false;
-                }
-            }
-
-            function updateLoadingStatus() {
-                if (loadedImagesCount >= totalImagesToLoad) {
-                    allImagesLoaded = true;
-                    document.getElementById("brochure-card").classList.add("loaded");
-                    document.getElementById('loading-indicator').style.display = 'none';
-                }
-            }
-
-            async function setImages(imageLinks) {
-                const imageElements = [
-                    document.getElementById("imageLarge"),
-                    document.getElementById("image1"),
-                    document.getElementById("image2"),
-                    document.getElementById("image3"),
-                    document.getElementById("agentImage"),
-                ];
-
-                loadedImagesCount = 0;
-                allImagesLoaded = false;
-
-                const imagePromises = imageElements.map((img, index) => {
-                    const imageUrl = imageLinks[index] || "placeholder.jpeg";
-                    return loadAndSetImage(img, imageUrl);
-                });
-
-                await Promise.all(imagePromises);
-                return true;
-            }
-
-            function getPriceText(property) {
-                let priceText = `AED ${formatPrice(property["ufCrm22Price"] || 0)}`;
-
-                if (property["ufCrm22RentalPeriod"] === 'Y') {
-                    priceText = `AED ${formatPrice(property["ufCrm22YearlyPrice"] || property["ufCrm22Price"] || 0)} /year`;
-                } else if (property["ufCrm22RentalPeriod"] === 'M') {
-                    priceText = `AED ${formatPrice(property["ufCrm22MonthlyPrice"] || property["ufCrm22Price"] || 0)} /month`;
-                } else if (property["ufCrm22RentalPeriod"] === 'D') {
-                    priceText = `AED ${formatPrice(property["ufCrm22DailyPrice"] || property["ufCrm22Price"] || 0)} /day`;
-                } else if (property["ufCrm22RentalPeriod"] === 'W') {
-                    priceText = `AED ${formatPrice(property["ufCrm22WeeklyPrice"] || property["ufCrm22Price"] || 0)} /week`;
-                }
-
-                return priceText;
-            }
-
-            async function populateBrochureContent(property) {
-                document.getElementById("title").textContent = property["ufCrm22TitleEn"] || "Property Title Not Available";
-                document.getElementById("description").textContent = property["ufCrm22BrochureDescription"] ||
-                    (property["ufCrm22DescriptionEn"]?.slice(0, 380) + "...") ||
-                    "Description not available";
-                document.getElementById("size").textContent = property["ufCrm22Size"] || "N/A";
-                document.getElementById("sizeSqm").textContent = property["ufCrm22Size"] ? sqftToSqm(property["ufCrm22Size"]) : "N/A";
-                document.getElementById("bathrooms").textContent = property["ufCrm22Bathroom"] || "N/A";
-                document.getElementById("bedrooms").textContent = property["ufCrm22Bedroom"] || "N/A";
-                document.getElementById("propertyType").textContent = getPropertyType(property["ufCrm22PropertyType"]);
-                document.getElementById("price").textContent = formatPrice(property["ufCrm22Price"] || 0);
-                document.getElementById("priceText").textContent = getPriceText(property);
-
-                const subtitle = `${getPropertyType(property["ufCrm22PropertyType"])} for ${getOfferingType(property["ufCrm22OfferingType"])} in ${property["ufCrm22Community"] || "N/A"}`;
-                document.getElementById("subtitle").textContent = subtitle;
-
-                document.getElementById("agentName").textContent = property["ufCrm22AgentName"] || "Agent Not Available";
-                document.getElementById("agentPhone").textContent = property["ufCrm22AgentPhone"] || "Phone Not Available";
-                document.getElementById("agentEmail").textContent = property["ufCrm22AgentEmail"] || "Email Not Available";
-
-                const imageLinks = Array.isArray(property["ufCrm22PhotoLinks"]) ? property["ufCrm22PhotoLinks"] : [];
-                const agentPhoto = property["ufCrm22AgentPhoto"] || "placeholder.jpeg";
-                const allImages = [...imageLinks.slice(0, 4), agentPhoto];
-
-                await setImages(allImages);
-
-                setTimeout(() => {
-                    document.getElementById("brochure-card").classList.add("loaded");
-                }, 500);
-
-                return true;
-            }
-
-            function getPropertyIdFromUrl() {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get('id');
-            }
-
-            try {
-                const propertyId = getPropertyIdFromUrl();
-                property = await fetchPropertyDetails(propertyId);
-                await populateBrochureContent(property);
-
-                document.getElementById("downloadBtn").addEventListener("click", async function() {
-                    await downloadBrochure(property["ufCrm22TitleEn"] || "Property_Brochure");
-                });
-
-                document.getElementById("redirectBtn").addEventListener("click", function() {
-                    window.location.href = "index.php";
-                });
-
-                setTimeout(() => {
-                    document.getElementById('loading-indicator').style.display = 'none';
-                }, 1500);
-            } catch (error) {
-                console.error("Error in initialization process:", error);
-                alert("Error loading property brochure. Please try again later.");
-                document.getElementById('loading-indicator').style.display = 'none';
-            }
-        });
+            setTimeout(() => {
+                document.querySelector('.download-pdf-btn').style.display = 'block';
+            }, 10);
+        }
     </script>
+
 </body>
 
 </html>
