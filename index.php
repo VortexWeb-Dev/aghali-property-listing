@@ -7,6 +7,7 @@ include_once __DIR__ . '/views/header.php';
 
 $currentUser = fetchCurrentUser();
 $currentUserId = $currentUser['ID'];
+$_SESSION['currentUserId'] = $currentUserId;
 $isAdmin = isAdmin($currentUserId);
 
 include 'views/components/toast.php';
@@ -41,3 +42,7 @@ if (!array_key_exists($page, $pages)) {
 }
 
 include_once __DIR__ . '/views/footer.php';
+?>
+<script>
+    localStorage.setItem('currentUserId', '<?php echo $currentUserId; ?>');
+</script>

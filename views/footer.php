@@ -98,6 +98,12 @@
                 break;
 
             case 'downloadPDF':
+                const currentUserId = localStorage.getItem('currentUserId');
+                if (currentUserId) {
+                    window.location.href = `download-pdf.php?id=${propertyId}&userId=${currentUserId}`;
+                } else {
+                    console.error('currentUserId not found in localStorage');
+                }
                 window.location.href = `download-pdf.php?id=${propertyId}`;
                 reloadRequired = false;
                 break;

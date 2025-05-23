@@ -9,7 +9,7 @@ require __DIR__ . "/vendor/autoload.php";
 define('C_REST_WEB_HOOK_URL', 'https://aghali.bitrix24.com/rest/44/3cb982q5ext2yuma/');
 
 // Fetch URL params
-$type = $_GET['type'];
+$currentUserId = $_GET['userId'];
 $id   = $_GET['id'];
 
 // Retrieve the property from Bitrix24
@@ -61,27 +61,30 @@ $companyAddress = "901/909, World Trade Center 1, Nassima Tower. Sheik Zayed Roa
 $companyWebsite = "https://aghalirealestate.com/";
 
 // Agent/Owner info
-if ($type === 'agent') {
-    $agentName  = $property['ufCrm22AgentName']  ?? "Agent Name";
-    $agentEmail = $property['ufCrm22AgentEmail'] ?? "agent@example.com";
-    $agentPhone = $property['ufCrm22AgentPhone'] ?? "+971 4 357 5939";
-} elseif ($type === 'owner') {
-    $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
-    // Attempt to fetch owner details from Bitrix
-    $userResponse = CRest::call("user.get", [
-        "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
-    ]);
-    $owner       = $userResponse['result'][0] ?? [];
-    $agentEmail  = $owner["EMAIL"]          ?? "owner@example.com";
-    $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "+971 4 357 5939";
-} else {
-    // Default to current user
-    $currentUserResponse = CRestCurrent::call('user.current');
-    $user       = $currentUserResponse['result'];
-    $agentName  = trim($user['NAME'] . ' ' . $user['LAST_NAME']);
-    $agentEmail = $user['EMAIL'];
-    $agentPhone = $user['PERSONAL_MOBILE'] ?? "+971 4 357 5939";
-}
+// if ($type == 'agent') {
+//     $agentName  = $property['ufCrm22AgentName']  ?? "Agent Name";
+//     $agentEmail = $property['ufCrm22AgentEmail'] ?? "agent@example.com";
+//     $agentPhone = $property['ufCrm22AgentPhone'] ?? "+971 4 357 5939";
+// } elseif ($type == 'owner') {
+//     $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
+//     // Attempt to fetch owner details from Bitrix
+//     $userResponse = CRest::call("user.get", [
+//         "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
+//     ]);
+//     $owner       = $userResponse['result'][0] ?? [];
+//     $agentEmail  = $owner["EMAIL"]          ?? "owner@example.com";
+//     $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "+971 4 357 5939";
+// } else {
+
+// Default to current user
+$currentUserResponse = CRest::call('user.get', [
+    'filter' => ['ID' => $currentUserId]
+]);
+$user = $currentUserResponse['result'][0] ?? [];
+$agentName  = trim(($user['NAME'] ?? '') . ' ' . ($user['LAST_NAME'] ?? ''));
+$agentEmail = $user['EMAIL'] ?? 'No email found';
+$agentPhone = $user['PERSONAL_MOBILE'] ?? 'No phone found';
+// }
 
 // Amenities
 $amenities = $property['ufCrm22Amenities'] ?? [];
