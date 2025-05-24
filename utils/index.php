@@ -516,7 +516,7 @@ function uploadFile($file, $isDocument = false)
 
 function fetchCurrentUser()
 {
-    $response = CRest::call("user.current");
+    $response = CRestCurrent::call("user.current");
     return $response['result'];
 }
 
