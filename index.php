@@ -2,10 +2,13 @@
 require_once __DIR__ . '/crest/settings.php';
 require_once __DIR__ . '/controllers/SpaController.php';
 require_once __DIR__ . '/utils/index.php';
+require_once(__DIR__ . '/crest/crestcurrent.php');
 
 include_once __DIR__ . '/views/header.php';
 
-$currentUser = fetchCurrentUser();
+
+$result = CRestCurrent::call('user.current');
+$currentUser = $result['result'];
 $currentUserId = $currentUser['ID'];
 $_SESSION['currentUserId'] = $currentUserId;
 $isAdmin = isAdmin($currentUserId);
