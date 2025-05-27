@@ -68,15 +68,82 @@ $companyWebsite = "https://aghalirealestate.com/";
 // } elseif ($type == 'owner') {
 
 // Default to owner details if available
-    $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
-    // Attempt to fetch owner details from Bitrix
-    $userResponse = CRest::call("user.get", [
-        "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
+// Agent/Owner info
+// Helper: fetch the first ACTIVE user matching $filter, or null
+function getUserDetails(array $filter): ?array
+{
+    $response = CRest::call('user.get', [
+        'filter' => array_merge($filter),
     ]);
-    $owner       = $userResponse['result'][0] ?? [];
-    $agentEmail  = $owner["EMAIL"]          ?? "No email found";
-    $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "No phone found";
-    
+
+    if (!empty($response['error']) || empty($response['result'][0])) {
+        return null;
+    }
+
+    return $response['result'][0];
+}
+
+// ——————————————————————————————————————————
+// Agent / Owner lookup
+// ——————————————————————————————————————————
+
+$agentName  = trim($property['ufCrm22ListingOwner'] ?? '');
+$agentEmail = 'No email found';
+$agentPhone = 'No phone found';
+$agentImage = 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png'; // placeholder
+
+if ($agentName) {
+    // split into words
+    $parts = explode(' ', $agentName);
+
+    if (count($parts) === 1) {
+        // If only one word, use it as %NAME filter
+        $owner = getUserDetails(['%NAME' => $agentName]);
+    } else {
+        // build all "%NAME" / "%LAST_NAME" combos
+        $combos = [];
+        for ($i = 1; $i < count($parts); $i++) {
+            $combos[] = [
+                '%NAME'      => implode(' ', array_slice($parts, 0, $i)),
+                '%LAST_NAME' => implode(' ', array_slice($parts, $i)),
+            ];
+        }
+
+        // try each until we find an owner
+        $owner = null;
+        foreach ($combos as $f) {
+            if ($u = getUserDetails($f)) {
+                $owner = $u;
+                break;
+            }
+        }
+
+        // fallback to a full-name search
+        if (!$owner) {
+            $owner = getUserDetails(['%FIND' => $agentName]);
+        }
+    }
+
+    // if we found one, pull out email/phone/photo
+    if ($owner) {
+        $agentEmail = $owner['EMAIL']           ?? $agentEmail;
+        $agentPhone = (!empty($owner['PERSONAL_MOBILE']) ? $owner['PERSONAL_MOBILE'] : (!empty($owner['WORK_MOBILE']) ? $owner['WORK_MOBILE'] : $agentPhone));
+
+        if (!empty($owner['PERSONAL_PHOTO'])) {
+            $photoField = $owner['PERSONAL_PHOTO'];
+            // if it's a numeric file ID, fetch the download URL
+            if (ctype_digit((string)$photoField)) {
+                $file = CRest::call('disk.file.get', ['id' => (int)$photoField]);
+                $agentImage = $file['result']['DOWNLOAD_URL'] ?? $agentImage;
+            } else {
+                // otherwise assume it's already a URL
+                $agentImage = $photoField;
+            }
+        }
+    }
+}
+
+
 // } else {
 
 // Default to current user
@@ -634,7 +701,7 @@ $base64Logo = imageToBase64($companyLogoPath);
     <div class="agent-card">
         <!-- Agent Photo (placeholder or real) -->
         <img
-            src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            src="<?= htmlspecialchars($agentImage) ?>"
             alt="Agent Photo"
             class="agent-photo">
         <div class="agent-details">
