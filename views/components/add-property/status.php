@@ -6,7 +6,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : '';
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Publishing Status</h2>
 
     <div class="my-4 flex flex-col gap-3">
-        <?php if ($isAdmin) { ?>
+        <?php // if ($isAdmin) { ?>
             <!-- Publish Option -->
             <div class="border border-gray-300 p-4 rounded-md cursor-pointer transition-colors hover:bg-blue-50 flex gap-2 items-center"
                 data-status-value="PUBLISHED" id="publish-option">
@@ -15,7 +15,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : '';
                     Publish
                 </label>
             </div>
-        <?php } ?>
+        <?php // } ?>
 
         <!-- Unpublish Option -->
         <div class="border border-gray-300 p-4 rounded-md cursor-pointer transition-colors hover:bg-blue-50 flex gap-2 items-center"
