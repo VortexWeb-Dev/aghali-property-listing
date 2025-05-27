@@ -66,24 +66,27 @@ $companyWebsite = "https://aghalirealestate.com/";
 //     $agentEmail = $property['ufCrm22AgentEmail'] ?? "agent@example.com";
 //     $agentPhone = $property['ufCrm22AgentPhone'] ?? "+971 4 357 5939";
 // } elseif ($type == 'owner') {
-//     $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
-//     // Attempt to fetch owner details from Bitrix
-//     $userResponse = CRest::call("user.get", [
-//         "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
-//     ]);
-//     $owner       = $userResponse['result'][0] ?? [];
-//     $agentEmail  = $owner["EMAIL"]          ?? "owner@example.com";
-//     $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "+971 4 357 5939";
+
+// Default to owner details if available
+    $agentName  = $property['ufCrm22ListingOwner'] ?? "Owner Name";
+    // Attempt to fetch owner details from Bitrix
+    $userResponse = CRest::call("user.get", [
+        "filter" => ["NAME" => $property['ufCrm22ListingOwner']]
+    ]);
+    $owner       = $userResponse['result'][0] ?? [];
+    $agentEmail  = $owner["EMAIL"]          ?? "No email found";
+    $agentPhone  = $owner["PERSONAL_MOBILE"] ?? "No phone found";
+    
 // } else {
 
 // Default to current user
-$currentUserResponse = CRest::call('user.get', [
-    'filter' => ['ID' => $currentUserId]
-]);
-$user = $currentUserResponse['result'][0] ?? [];
-$agentName  = trim(($user['NAME'] ?? '') . ' ' . ($user['LAST_NAME'] ?? ''));
-$agentEmail = $user['EMAIL'] ?? 'No email found';
-$agentPhone = $user['PERSONAL_MOBILE'] ?? 'No phone found';
+// $currentUserResponse = CRest::call('user.get', [
+//     'filter' => ['ID' => $currentUserId]
+// ]);
+// $user = $currentUserResponse['result'][0] ?? [];
+// $agentName  = trim(($user['NAME'] ?? '') . ' ' . ($user['LAST_NAME'] ?? ''));
+// $agentEmail = $user['EMAIL'] ?? 'No email found';
+// $agentPhone = $user['PERSONAL_MOBILE'] ?? 'No phone found';
 // }
 
 // Amenities
